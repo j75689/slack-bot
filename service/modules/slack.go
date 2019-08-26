@@ -45,9 +45,10 @@ func HandleSlackEvent(api *slack.Client, botID string) func(*gin.Context) {
 				tag := fmt.Sprintf("<@%s>", botID)
 				if strings.HasPrefix(ev.Text, tag) {
 					text := strings.TrimSpace(strings.ReplaceAll(ev.Text, tag, ""))
-					fmt.Println(api.PostMessage(ev.Channel, slack.MsgOptionText("Yes, hello "+text, true)))
+					if _, _, err := api.PostMessage(ev.Channel, slack.MsgOptionText("Yes, hello "+text, true)); err != nil {
+						appruntime.Logger.Error(err.Error())
+					}
 				}
-
 			}
 		}
 		c.Next()
