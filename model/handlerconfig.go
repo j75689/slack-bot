@@ -2,7 +2,7 @@ package model
 
 // HandlerConfig definition resource
 type HandlerConfig struct {
-	ID        int
+	ID        int                    `yaml:"-,omitempty"`
 	ConfigID  string                 `yaml:"configID"`
 	Product   string                 `yaml:"product"`
 	Variables map[string]interface{} `yaml:"variables"`
