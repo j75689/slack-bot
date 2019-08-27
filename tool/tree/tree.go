@@ -56,14 +56,19 @@ func newNode() *Node {
 
 type Node struct {
 	sync.Mutex
-	Index    []byte
-	Children map[string]*Node
+	Index         []byte
+	Children      map[string]*Node
+	ParamterChild *Node
+}
+
+func (node *Node) isParmeter(key string) bool {
+	ok, _ := regexp.MatchString(`(\$\{.*?\})`, key)
+	return ok
 }
 
 func (node *Node) Insert(keys []string, value []byte) error {
 	node.Lock()
 	defer node.Unlock()
-
 	if len(keys) <= 0 {
 		return errors.New("wrong key")
 	}
@@ -80,6 +85,11 @@ func (node *Node) Insert(keys []string, value []byte) error {
 	key := keys[1]
 	if key == "" {
 		return errors.New("empty key name")
+	}
+
+	if node.isParmeter(key) {
+		node.ParamterChild = newNode()
+		return node.ParamterChild.Insert(keys[1:], value)
 	}
 
 	var children *Node
@@ -112,6 +122,11 @@ func (node *Node) Update(keys []string, value []byte) error {
 		return errors.New("empty key name")
 	}
 
+	if node.isParmeter(key) {
+		node.ParamterChild = newNode()
+		return node.ParamterChild.Insert(keys[1:], value)
+	}
+
 	var children *Node
 
 	if node.Children[key] != nil {
@@ -137,7 +152,16 @@ func (node *Node) Delete(keys []string) error {
 		return nil
 	}
 	key := keys[1]
-	children := node.Children[key]
+
+	var children *Node
+
+	isParmeter := node.isParmeter(key)
+	if isParmeter {
+		children = node.ParamterChild
+	} else {
+		children = node.Children[key]
+	}
+
 	var err error
 	if children != nil {
 		err = children.Delete(keys[1:])
@@ -149,7 +173,11 @@ func (node *Node) Delete(keys []string) error {
 
 	// if children child size is zero , remove this children
 	if len(children.Children) < 1 {
-		delete(node.Children, key)
+		if isParmeter {
+			node.ParamterChild = nil
+		} else {
+			delete(node.Children, key)
+		}
 	}
 	return nil
 }
@@ -172,7 +200,10 @@ func (node *Node) Search(keys []string) ([]byte, error) {
 	key := keys[1]
 	children := node.Children[key]
 	if children == nil {
-		return nil, errors.New("wrong key")
+		if node.ParamterChild == nil {
+			return nil, errors.New("wrong key")
+		}
+		children = node.ParamterChild
 	}
 
 	return children.Search(keys[1:])
