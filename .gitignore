@@ -1,3 +1,6 @@
 logs
 __debug_bin
 .vscode
+go.sum
+slackbot
+*.db
