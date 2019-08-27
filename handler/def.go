@@ -1,5 +1,9 @@
 package handler
 
+import (
+	"github.com/Invisibi-nd/slack-bot/model"
+)
+
 // StageType ...
 type StageType string
 
@@ -11,11 +15,10 @@ const (
 
 // Handler handle slack message
 type Handler interface {
-	Do() (string, error)
-	DryRun() (string, error)
+	Do(config *model.HandlerConfig) (string, error)
 }
 
 // StageRunner run stage action
 type StageRunner interface {
-	Run(variables map[string]interface{}) (string, error)
+	Run(stage *model.HandlerStageConfig, variables *map[string]interface{}) (string, error)
 }

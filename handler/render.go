@@ -1,10 +1,26 @@
 package handler
 
+import (
+	"bytes"
+	"text/template"
+
+	"github.com/Invisibi-nd/slack-bot/model"
+)
+
 // RenderProcesser process render
 type RenderProcesser struct {
 }
 
-// Run ...
-func (obj *RenderProcesser) Run(variables map[string]interface{}) (string, error) {
-	return "", nil
+// Run render stage
+func (obj *RenderProcesser) Run(stage *model.HandlerStageConfig, variables *map[string]interface{}) (string, error) {
+	tmpl := template.New("temp")
+	tmpl.Parse(stage.Template)
+	var (
+		data bytes.Buffer
+	)
+	err := tmpl.Execute(&data, *variables)
+	if err != nil {
+		return "", nil
+	}
+	return data.String(), nil
 }

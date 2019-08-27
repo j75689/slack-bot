@@ -1,0 +1,105 @@
+version: 1
+id: ev
+project: ev
+variables:
+  Title: Would you like to play a game?
+  data: data1
+command: 
+  - find sid ${input1}
+stage:
+  - type: action
+    plugin: ElasticSearch
+    paramter: 
+      variables:
+        query_id: ${input1}
+      query: |+
+        {
+          index: _evp,
+          size: 1,
+          body: {
+            query: {
+              match: {
+                'sidSeq.keyword': ${query_id},
+              }
+            },
+          },
+        }
+      
+    output:
+      data: result
+  - type: render
+    template: |
+      [
+        {
+          "type": "context",
+          "elements": [
+            {
+              "type": "mrkdwn",
+              "text": "{{.Title}}"
+            }
+          ]
+        },
+          {
+          "type": "context",
+          "elements": [
+            {
+              "type": "mrkdwn",
+              "text": "{{.data}}"
+            }
+          ]
+        }
+      ]
+
+---
+version: 1
+id: ev
+project: ev
+variables:
+  Title: What are you like?
+  data: data2
+command: 
+  - find sid ${input1}
+stage:
+  - type: action
+    plugin: ElasticSearch
+    paramter: 
+      variables:
+        query_id: ${input1}
+      query: |+
+        {
+          index: _evp,
+          size: 1,
+          body: {
+            query: {
+              match: {
+                'sidSeq.keyword': ${query_id},
+              }
+            },
+          },
+        }
+      
+    output:
+      data: result
+  - type: render
+    template: |
+      [
+        {
+          "type": "context",
+          "elements": [
+            {
+              "type": "mrkdwn",
+              "text": "{{.Title}}"
+            }
+          ]
+        },
+          {
+          "type": "context",
+          "elements": [
+            {
+              "type": "mrkdwn",
+              "text": "{{.data}}"
+            }
+          ]
+        }
+      ]
+

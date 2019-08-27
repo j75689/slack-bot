@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/Invisibi-nd/slack-bot/appruntime"
+	"github.com/Invisibi-nd/slack-bot/handler"
 	"github.com/Invisibi-nd/slack-bot/service/middleware"
 	"github.com/Invisibi-nd/slack-bot/service/modules"
 	ginzap "github.com/gin-contrib/zap"
@@ -33,6 +34,7 @@ func registerAPI(app *gin.Engine) {
 	{
 		health.Any("", modules.HandleHealthCheck())
 	}
+	manager := handler.NewManager()
 	// slack hook
 	slackhook := app.Group("/slack")
 	{
@@ -44,5 +46,10 @@ func registerAPI(app *gin.Engine) {
 		botID := authResp.UserID
 		slackhook.POST("/events-endpoint", modules.HandleSlackEvent(api, botID))
 		slackhook.Any("/interactive-endpoint", modules.HandleSlackInteractive())
+	}
+	// Debug
+	debug := app.Group("/debug")
+	{
+		debug.POST("/dryrun", modules.HandleDryRun(manager))
 	}
 }

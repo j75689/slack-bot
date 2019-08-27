@@ -28,7 +28,7 @@ func init() {
 	{
 		log.Println("[Init] load env variables")
 		if err := envconfig.Process("", &Env); err != nil {
-			log.Fatalf("[Init] load env error = [%v]", err)
+			log.Fatalf("[Init] load env error : [%v]", err)
 		}
 	}
 
@@ -107,7 +107,7 @@ func init() {
 			Pass:   Env.DBPass,
 		})
 		if err != nil {
-			log.Fatalf("[Init] connect db error = [%v]", err)
+			log.Fatalf("[Init] connect db error : [%v]", err)
 		}
 		DB = db
 	}

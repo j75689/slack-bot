@@ -12,6 +12,7 @@ import (
 )
 
 func main() {
+
 	go service.Start()
 
 	// Wait for interrupt signal to gracefully shutdown the server with
