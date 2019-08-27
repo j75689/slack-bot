@@ -7,6 +7,12 @@ import (
 	"sync"
 )
 
+func NewTree() *Tree {
+	return &Tree{
+		Root: newNode(),
+	}
+}
+
 type Tree struct {
 	Root *Node
 }
@@ -42,6 +48,12 @@ func (tree *Tree) Search(key string) ([]byte, error) {
 	return tree.Root.Search(tree.parse(key))
 }
 
+func newNode() *Node {
+	return &Node{
+		Children: make(map[string]*Node),
+	}
+}
+
 type Node struct {
 	sync.Mutex
 	Index    []byte
@@ -75,9 +87,8 @@ func (node *Node) Insert(keys []string, value []byte) error {
 	if node.Children[key] != nil {
 		children = node.Children[key]
 	} else {
-		node.Children[key] = &Node{
-			Children: make(map[string]*Node),
-		}
+		children = newNode()
+		node.Children[key] = children
 	}
 
 	return children.Insert(keys[1:], value)
@@ -106,9 +117,8 @@ func (node *Node) Update(keys []string, value []byte) error {
 	if node.Children[key] != nil {
 		children = node.Children[key]
 	} else {
-		node.Children[key] = &Node{
-			Children: make(map[string]*Node),
-		}
+		children = newNode()
+		node.Children[key] = children
 	}
 
 	return children.Update(keys[1:], value)
