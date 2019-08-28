@@ -23,21 +23,21 @@ func (obj *Manager) findIndex(project string) (index *tree.Tree) {
 }
 
 // Register config
-func (obj *Manager) Register(project string, config *model.HandlerConfig) (ok bool, err error) {
+func (obj *Manager) Register(project string, config *model.SlackBotConfig) (ok bool, err error) {
 	rollback := false
 	index := obj.findIndex(project)
-	for _, cmd := range config.Command {
-		err = index.Insert(cmd, []byte(config.ConfigID))
+	for _, cmd := range config.Task.Command {
+		err = index.Insert(cmd, []byte(config.MetaData.Name))
 	}
 	rollback = err != nil
 
 	if !rollback {
-		err = appruntime.DB.Save(project, config.ConfigID, config)
+		err = appruntime.DB.Save(project, config.MetaData.Name, config)
 		rollback = err != nil
 	}
 
 	if rollback {
-		for _, cmd := range config.Command {
+		for _, cmd := range config.Task.Command {
 			index.Delete(cmd)
 		}
 		return
@@ -47,18 +47,18 @@ func (obj *Manager) Register(project string, config *model.HandlerConfig) (ok bo
 }
 
 // Deregister config
-func (obj *Manager) Deregister(project string, configID string) (ok bool, err error) {
-	var config model.HandlerConfig
-	data, _ := appruntime.DB.Find(project, configID)
+func (obj *Manager) Deregister(project string, configName string) (ok bool, err error) {
+	var config model.SlackBotConfig
+	data, _ := appruntime.DB.Find(project, configName)
 	if err = yaml.Unmarshal(data, &config); err != nil {
 		return false, err
 	}
 	index := obj.findIndex(project)
-	for _, cmd := range config.Command {
+	for _, cmd := range config.Task.Command {
 		index.Delete(cmd)
 	}
 
-	appruntime.DB.Delete(project, configID)
+	appruntime.DB.Delete(project, configName)
 
 	return true, nil
 }
@@ -66,13 +66,13 @@ func (obj *Manager) Deregister(project string, configID string) (ok bool, err er
 // Execute command
 func (obj *Manager) Execute(project string, cmd string) (reply string, err error) {
 	index := obj.findIndex(project)
-	configID, err := index.Search(cmd)
+	configName, err := index.Search(cmd)
 	if err != nil {
 		return "", err
 	}
 
-	var config model.HandlerConfig
-	data, _ := appruntime.DB.Find(project, string(configID))
+	var config model.SlackBotConfig
+	data, _ := appruntime.DB.Find(project, string(configName))
 	if err = yaml.Unmarshal(data, &config); err != nil {
 		return "", err
 	}
@@ -82,7 +82,7 @@ func (obj *Manager) Execute(project string, cmd string) (reply string, err error
 }
 
 // DryRun test config
-func (obj *Manager) DryRun(config *model.HandlerConfig) (string, error) {
+func (obj *Manager) DryRun(config *model.SlackBotConfig) (string, error) {
 	return obj.MessageHandler.Do(config)
 }
 

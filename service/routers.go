@@ -44,8 +44,8 @@ func registerAPI(app *gin.Engine) {
 			appruntime.Logger.Fatal(err.Error())
 		}
 		botID := authResp.UserID
-		slackhook.POST("/events-endpoint", modules.HandleSlackEvent(api, botID))
-		slackhook.Any("/interactive-endpoint", modules.HandleSlackInteractive())
+		slackhook.POST("/:project/events-endpoint", modules.HandleSlackEvent(api, botID))
+		slackhook.Any("/:project/interactive-endpoint", modules.HandleSlackInteractive())
 	}
 	// Debug
 	debug := app.Group("/debug")

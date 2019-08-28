@@ -15,10 +15,10 @@ const (
 
 // Handler handle slack message
 type Handler interface {
-	Do(config *model.HandlerConfig) (string, error)
+	Do(config *model.SlackBotConfig) (string, error)
 }
 
 // StageRunner run stage action
 type StageRunner interface {
-	Run(stage *model.HandlerStageConfig, variables *map[string]interface{}) (string, error)
+	Run(stage *model.Stage, variables *map[string]interface{}) (string, error)
 }

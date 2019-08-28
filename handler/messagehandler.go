@@ -8,10 +8,10 @@ type SlackMessageHandler struct {
 }
 
 // Do ...
-func (obj *SlackMessageHandler) Do(config *model.HandlerConfig) (reply string, err error) {
-	for _, stage := range config.Stage {
+func (obj *SlackMessageHandler) Do(config *model.SlackBotConfig) (reply string, err error) {
+	for _, stage := range config.Task.Stage {
 		if runner := obj.Processer[StageType(stage.Type)]; runner != nil {
-			reply, err = runner.Run(stage, &config.Variables)
+			reply, err = runner.Run(stage, &config.Task.Variables)
 		}
 		if err != nil {
 			break

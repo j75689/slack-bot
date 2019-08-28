@@ -4,7 +4,7 @@ package appruntime
 type env struct {
 	// Basic Info
 	AppName  string `envconfig:"APP_NAME" default:"slackbot"`
-	Port     int16  `envconfig:"PORT" default:"6000"`
+	Port     int16  `envconfig:"PORT" default:"8001"`
 	LogLevel string `envconfig:"LOG_LEVEL" default:"INFO"`
 	LogPath  string `envconfig:"LOG_PATH" default:"./logs"`
 	// Slack

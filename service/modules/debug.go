@@ -20,7 +20,7 @@ func HandleDryRun(manager *handler.Manager) func(*gin.Context) {
 		data, _ := c.GetRawData()
 		reader := bytes.NewReader(data)
 		dec := yaml.NewDecoder(reader)
-		var config model.HandlerConfig
+		var config model.SlackBotConfig
 
 		for {
 			err := dec.Decode(&config)

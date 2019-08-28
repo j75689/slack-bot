@@ -12,7 +12,7 @@ type RenderProcesser struct {
 }
 
 // Run render stage
-func (obj *RenderProcesser) Run(stage *model.HandlerStageConfig, variables *map[string]interface{}) (string, error) {
+func (obj *RenderProcesser) Run(stage *model.Stage, variables *map[string]interface{}) (string, error) {
 	tmpl := template.New("temp")
 	tmpl.Parse(stage.Template)
 	var (

@@ -7,6 +7,6 @@ type ActionProcesser struct {
 }
 
 // Run action stage
-func (obj *ActionProcesser) Run(stage *model.HandlerStageConfig, variables *map[string]interface{}) (string, error) {
+func (obj *ActionProcesser) Run(stage *model.Stage, variables *map[string]interface{}) (string, error) {
 	return "", nil
 }

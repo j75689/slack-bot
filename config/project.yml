@@ -1,0 +1,6 @@
+version: 1
+kind: Project
+metadata:
+  name: ev
+  labels: 
+    name: noodoe-ev-cloud
