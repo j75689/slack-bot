@@ -20,7 +20,8 @@ func (obj *SlackMessageHandler) Do(config *model.SlackBotConfig) (reply string, 
 	return
 }
 
-func newSlackMessageHandler() *SlackMessageHandler {
+// NewSlackMessageHandler process slack message
+func NewSlackMessageHandler() *SlackMessageHandler {
 	return &SlackMessageHandler{
 		Processer: map[StageType]StageRunner{
 			renderTag: &RenderProcesser{},

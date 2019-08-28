@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/Invisibi-nd/slack-bot/appruntime"
-	"github.com/Invisibi-nd/slack-bot/handler"
+	"github.com/Invisibi-nd/slack-bot/manager"
 	"github.com/Invisibi-nd/slack-bot/service/middleware"
 	"github.com/Invisibi-nd/slack-bot/service/modules"
 	ginzap "github.com/gin-contrib/zap"
@@ -34,9 +34,10 @@ func registerAPI(app *gin.Engine) {
 	{
 		health.Any("", modules.HandleHealthCheck())
 	}
-	manager := handler.NewManager()
+	management := manager.NewManagement()
 	// slack hook
 	slackhook := app.Group("/slack")
+	slackhook.Use(middleware.VerifyProjectMiddleware(management))
 	{
 		api := slack.New(appruntime.Env.SlackBotOauthToken)
 		authResp, err := api.AuthTest()
@@ -44,12 +45,12 @@ func registerAPI(app *gin.Engine) {
 			appruntime.Logger.Fatal(err.Error())
 		}
 		botID := authResp.UserID
-		slackhook.POST("/:project/events-endpoint", modules.HandleSlackEvent(api, botID))
-		slackhook.Any("/:project/interactive-endpoint", modules.HandleSlackInteractive())
+		slackhook.POST("/:project/events-endpoint", modules.HandleSlackEvent(api, botID, management))
+		slackhook.Any("/:project/interactive-endpoint", modules.HandleSlackInteractive(management))
 	}
 	// Debug
 	debug := app.Group("/debug")
 	{
-		debug.POST("/dryrun", modules.HandleDryRun(manager))
+		debug.POST("/dryrun", modules.HandleDryRun(management))
 	}
 }

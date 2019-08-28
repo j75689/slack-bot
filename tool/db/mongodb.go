@@ -15,6 +15,11 @@ type MongoDB struct {
 	instance *mongo.Client
 }
 
+// CheckTable check table exists
+func (db *MongoDB) CheckTable(table string) bool {
+	return false
+}
+
 // Save insert or update document
 func (db *MongoDB) Save(table string, key string, data interface{}) error {
 	return nil

@@ -2,6 +2,7 @@ package db
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
@@ -13,6 +14,19 @@ import (
 type BoltDB struct {
 	info     *Connection
 	instance *bbolt.DB
+}
+
+// CheckTable check table exists
+func (db *BoltDB) CheckTable(table string) bool {
+
+	err := db.instance.Batch(func(tx *bbolt.Tx) error {
+		b := tx.Bucket([]byte(table))
+		if b == nil {
+			return errors.New("not found")
+		}
+		return nil
+	})
+	return err == nil
 }
 
 // Save insert or update document

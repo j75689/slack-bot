@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/Invisibi-nd/slack-bot/appruntime"
+	"github.com/Invisibi-nd/slack-bot/manager"
 	"github.com/nlopes/slack"
 	"github.com/nlopes/slack/slackevents"
 
@@ -15,8 +16,9 @@ import (
 )
 
 // HandleSlackEvent check service challenge
-func HandleSlackEvent(api *slack.Client, botID string) func(*gin.Context) {
+func HandleSlackEvent(api *slack.Client, botID string, management *manager.Management) func(*gin.Context) {
 	return func(c *gin.Context) {
+
 		buf := new(bytes.Buffer)
 		buf.ReadFrom(c.Request.Body)
 		body := buf.String()
@@ -44,10 +46,17 @@ func HandleSlackEvent(api *slack.Client, botID string) func(*gin.Context) {
 			case *slackevents.MessageEvent:
 				tag := fmt.Sprintf("<@%s>", botID)
 				if strings.HasPrefix(ev.Text, tag) {
-					text := strings.TrimSpace(strings.ReplaceAll(ev.Text, tag, ""))
-					if _, _, err := api.PostMessage(ev.Channel, slack.MsgOptionText("Yes, hello "+text, true)); err != nil {
+					cmd := strings.TrimSpace(strings.ReplaceAll(ev.Text, tag, ""))
+
+					// process cmd
+					projectName := c.Param("project")
+					_, messageManager := management.Get(manager.MessageKind)
+					messageManager.Execute(projectName, cmd)
+
+					if _, _, err := api.PostMessage(ev.Channel, slack.MsgOptionText("Yes, hello "+cmd, true)); err != nil {
 						appruntime.Logger.Error(err.Error())
 					}
+
 				}
 			}
 		}
@@ -56,7 +65,7 @@ func HandleSlackEvent(api *slack.Client, botID string) func(*gin.Context) {
 }
 
 // HandleSlackInteractive handle slack Interactive
-func HandleSlackInteractive() func(*gin.Context) {
+func HandleSlackInteractive(management *manager.Management) func(*gin.Context) {
 	return func(c *gin.Context) {
 		buf := new(bytes.Buffer)
 		buf.ReadFrom(c.Request.Body)

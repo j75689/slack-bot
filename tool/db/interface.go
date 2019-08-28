@@ -21,6 +21,7 @@ type Connection struct {
 
 // Storage definition abstract method
 type Storage interface {
+	CheckTable(table string) bool
 	Save(table string, key string, data interface{}) error
 	Find(table string, key string) ([]byte, error)
 	FindAll(table string, callback func(key string, data []byte)) error

@@ -1,19 +1,20 @@
-package handler
+package manager
 
 import (
 	"github.com/Invisibi-nd/slack-bot/appruntime"
+	"github.com/Invisibi-nd/slack-bot/handler"
 	"github.com/Invisibi-nd/slack-bot/model"
 	"github.com/Invisibi-nd/slack-bot/tool/tree"
 	"gopkg.in/yaml.v2"
 )
 
-// Manager manage handlers
-type Manager struct {
+// MessageManager manage message resource
+type MessageManager struct {
 	Index          map[string]*tree.Tree
-	MessageHandler Handler
+	MessageHandler handler.Handler
 }
 
-func (obj *Manager) findIndex(project string) (index *tree.Tree) {
+func (obj *MessageManager) findIndex(project string) (index *tree.Tree) {
 	index = obj.Index[project]
 	if index == nil {
 		index = tree.NewTree()
@@ -23,7 +24,7 @@ func (obj *Manager) findIndex(project string) (index *tree.Tree) {
 }
 
 // Register config
-func (obj *Manager) Register(project string, config *model.SlackBotConfig) (ok bool, err error) {
+func (obj *MessageManager) Register(project string, config *model.SlackBotConfig) (ok bool, err error) {
 	rollback := false
 	index := obj.findIndex(project)
 	for _, cmd := range config.Task.Command {
@@ -47,7 +48,7 @@ func (obj *Manager) Register(project string, config *model.SlackBotConfig) (ok b
 }
 
 // Deregister config
-func (obj *Manager) Deregister(project string, configName string) (ok bool, err error) {
+func (obj *MessageManager) Deregister(project string, configName string) (ok bool, err error) {
 	var config model.SlackBotConfig
 	data, _ := appruntime.DB.Find(project, configName)
 	if err = yaml.Unmarshal(data, &config); err != nil {
@@ -64,7 +65,7 @@ func (obj *Manager) Deregister(project string, configName string) (ok bool, err 
 }
 
 // Execute command
-func (obj *Manager) Execute(project string, cmd string) (reply string, err error) {
+func (obj *MessageManager) Execute(project string, cmd string) (reply string, err error) {
 	index := obj.findIndex(project)
 	configName, err := index.Search(cmd)
 	if err != nil {
@@ -82,14 +83,13 @@ func (obj *Manager) Execute(project string, cmd string) (reply string, err error
 }
 
 // DryRun test config
-func (obj *Manager) DryRun(config *model.SlackBotConfig) (string, error) {
+func (obj *MessageManager) DryRun(config *model.SlackBotConfig) (string, error) {
 	return obj.MessageHandler.Do(config)
 }
 
-// NewManager create new handler manager
-func NewManager() *Manager {
-	return &Manager{
+func newMessageManager() *MessageManager {
+	return &MessageManager{
 		Index:          make(map[string]*tree.Tree),
-		MessageHandler: newSlackMessageHandler(),
+		MessageHandler: handler.NewSlackMessageHandler(),
 	}
 }
