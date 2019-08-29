@@ -17,7 +17,7 @@ func VerifyProjectMiddleware(management *manager.Management) gin.HandlerFunc {
 		_, projectManager := management.Get(manager.ProjectKind)
 		if pjm, ok := projectManager.(*manager.ProjectManager); ok {
 			if !pjm.VerifyProject(projectName) {
-				c.JSON(http.StatusOK, gin.H{
+				c.JSON(http.StatusNotFound, gin.H{
 					"error": fmt.Sprintf("project [%s] not found", projectName),
 				})
 				c.Abort()

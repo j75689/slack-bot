@@ -33,7 +33,7 @@ func (obj *MessageManager) Register(project string, config *model.SlackBotConfig
 	rollback = err != nil
 
 	if !rollback {
-		err = appruntime.DB.Save(project, config.MetaData.Name, config)
+		err = appruntime.DB.Save(project, config.Kind, config.MetaData.Name, config)
 		rollback = err != nil
 	}
 
@@ -48,9 +48,9 @@ func (obj *MessageManager) Register(project string, config *model.SlackBotConfig
 }
 
 // Deregister config
-func (obj *MessageManager) Deregister(project string, configName string) (ok bool, err error) {
+func (obj *MessageManager) Deregister(project, configName string) (ok bool, err error) {
 	var config model.SlackBotConfig
-	data, _ := appruntime.DB.Find(project, configName)
+	data, _ := appruntime.DB.Find(project, MessageKind, configName)
 	if err = yaml.Unmarshal(data, &config); err != nil {
 		return false, err
 	}
@@ -59,13 +59,13 @@ func (obj *MessageManager) Deregister(project string, configName string) (ok boo
 		index.Delete(cmd)
 	}
 
-	appruntime.DB.Delete(project, configName)
+	appruntime.DB.Delete(project, MessageKind, configName)
 
 	return true, nil
 }
 
 // Execute command
-func (obj *MessageManager) Execute(project string, cmd string) (reply string, err error) {
+func (obj *MessageManager) Execute(project, cmd string) (reply string, err error) {
 	index := obj.findIndex(project)
 	configName, err := index.Search(cmd)
 	if err != nil {
@@ -73,7 +73,7 @@ func (obj *MessageManager) Execute(project string, cmd string) (reply string, er
 	}
 
 	var config model.SlackBotConfig
-	data, _ := appruntime.DB.Find(project, string(configName))
+	data, _ := appruntime.DB.Find(project, MessageKind, string(configName))
 	if err = yaml.Unmarshal(data, &config); err != nil {
 		return "", err
 	}

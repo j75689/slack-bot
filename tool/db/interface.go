@@ -21,11 +21,11 @@ type Connection struct {
 
 // Storage definition abstract method
 type Storage interface {
-	CheckTable(table string) bool
-	Save(table string, key string, data interface{}) error
-	Find(table string, key string) ([]byte, error)
-	FindAll(table string, callback func(key string, data []byte)) error
-	Delete(table string, key string) error
+	CheckProject(project string) bool
+	Save(project, kind, key string, data interface{}) error
+	Find(project, kind, key string) ([]byte, error)
+	FindAll(project, kind string, callback func(key string, data []byte)) error
+	Delete(project, kind, key string) error
 	Connect(conn *Connection, args ...interface{}) error
 	Close() error
 }

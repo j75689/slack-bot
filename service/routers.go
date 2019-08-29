@@ -17,18 +17,20 @@ import (
 func InitRouter() (router *gin.Engine) {
 	gin.SetMode(gin.ReleaseMode)
 	router = gin.New()
+	router.HandleMethodNotAllowed = true
 	router.Use(gin.Recovery())
 	router.Use(gzip.Gzip(gzip.DefaultCompression))
 	router.Use(ginzap.Ginzap(appruntime.Logger, time.RFC3339, true))
 	router.Use(ginzap.RecoveryWithZap(appruntime.Logger, true))
-	router.NoMethod(middleware.NoMethodHandler())
 	router.NoRoute(middleware.NoRouteHandler())
-	registerAPI(router)
+	router.NoMethod(middleware.NoMethodHandler())
+
+	register(router)
 
 	return
 }
 
-func registerAPI(app *gin.Engine) {
+func register(app *gin.Engine) {
 	// health check
 	health := app.Group("/health")
 	{
@@ -37,7 +39,7 @@ func registerAPI(app *gin.Engine) {
 	management := manager.NewManagement()
 	// slack hook
 	slackhook := app.Group("/slack")
-	slackhook.Use(middleware.VerifyProjectMiddleware(management))
+	//slackhook.Use(middleware.VerifyProjectMiddleware(management))
 	{
 		api := slack.New(appruntime.Env.SlackBotOauthToken)
 		authResp, err := api.AuthTest()
@@ -48,9 +50,15 @@ func registerAPI(app *gin.Engine) {
 		slackhook.POST("/:project/events-endpoint", modules.HandleSlackEvent(api, botID, management))
 		slackhook.Any("/:project/interactive-endpoint", modules.HandleSlackInteractive(management))
 	}
-	// Debug
+	// debug
 	debug := app.Group("/debug")
 	{
 		debug.POST("/dryrun", modules.HandleDryRun(management))
+	}
+	// api
+	api := app.Group("/api/v1")
+	{
+		api.POST("/config/apply")
+		api.POST("/config/delete")
 	}
 }

@@ -18,7 +18,7 @@ type Tree struct {
 }
 
 func (tree *Tree) parse(key string) (keys []string) {
-	r := regexp.MustCompile(`(\w+)|'(.*?)'|"(.*?)"`)
+	r := regexp.MustCompile(`(\w+)|'(.*?)'|"(.*?)"|(\$\{.*?\})`)
 	temp := r.FindAllString(key, -1)
 	for _, key := range temp {
 		if strings.HasPrefix(key, `'`) && strings.HasSuffix(key, `'`) {
@@ -69,27 +69,19 @@ func (node *Node) isParmeter(key string) bool {
 func (node *Node) Insert(keys []string, value []byte) error {
 	node.Lock()
 	defer node.Unlock()
-	if len(keys) <= 0 {
-		return errors.New("wrong key")
-	}
 
-	if len(keys)-1 < 1 {
+	if len(keys) <= 0 {
 		if node.Index != nil {
 			return errors.New("key already exists")
 		}
-		// new one
 		node.Index = value
+		// stop recursive
 		return nil
 	}
 
-	key := keys[1]
+	key := keys[0]
 	if key == "" {
 		return errors.New("empty key name")
-	}
-
-	if node.isParmeter(key) {
-		node.ParamterChild = newNode()
-		return node.ParamterChild.Insert(keys[1:], value)
 	}
 
 	var children *Node
@@ -99,6 +91,13 @@ func (node *Node) Insert(keys []string, value []byte) error {
 	} else {
 		children = newNode()
 		node.Children[key] = children
+	}
+
+	if node.isParmeter(key) {
+		if node.ParamterChild == nil {
+			node.ParamterChild = newNode()
+		}
+		children = node.ParamterChild
 	}
 
 	return children.Insert(keys[1:], value)
@@ -109,22 +108,13 @@ func (node *Node) Update(keys []string, value []byte) error {
 	defer node.Unlock()
 
 	if len(keys) <= 0 {
-		return errors.New("wrong key")
-	}
-
-	if len(keys)-1 < 1 {
 		node.Index = value
 		return nil
 	}
 
-	key := keys[1]
+	key := keys[0]
 	if key == "" {
 		return errors.New("empty key name")
-	}
-
-	if node.isParmeter(key) {
-		node.ParamterChild = newNode()
-		return node.ParamterChild.Insert(keys[1:], value)
 	}
 
 	var children *Node
@@ -136,6 +126,13 @@ func (node *Node) Update(keys []string, value []byte) error {
 		node.Children[key] = children
 	}
 
+	if node.isParmeter(key) {
+		if node.ParamterChild == nil {
+			node.ParamterChild = newNode()
+		}
+		children = node.ParamterChild
+	}
+
 	return children.Update(keys[1:], value)
 }
 
@@ -144,14 +141,10 @@ func (node *Node) Delete(keys []string) error {
 	defer node.Unlock()
 
 	if len(keys) <= 0 {
-		return errors.New("wrong key")
-	}
-
-	if len(keys)-1 < 1 {
 		node.Index = nil
 		return nil
 	}
-	key := keys[1]
+	key := keys[0]
 
 	var children *Node
 
@@ -165,6 +158,8 @@ func (node *Node) Delete(keys []string) error {
 	var err error
 	if children != nil {
 		err = children.Delete(keys[1:])
+	} else {
+		err = errors.New("wrong key")
 	}
 
 	if err != nil {
@@ -187,17 +182,13 @@ func (node *Node) Search(keys []string) ([]byte, error) {
 	defer node.Unlock()
 
 	if len(keys) <= 0 {
-		return nil, errors.New("wrong key")
-	}
-
-	if len(keys)-1 < 1 {
 		if node.Index != nil {
 			return node.Index, nil
 		}
 		return nil, errors.New("key is not exists")
 	}
 
-	key := keys[1]
+	key := keys[0]
 	children := node.Children[key]
 	if children == nil {
 		if node.ParamterChild == nil {

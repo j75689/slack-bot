@@ -15,6 +15,20 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// BlockMsg custom reply msg
+type BlockMsg map[string]interface{}
+
+// BlockType get block type
+func (obj *BlockMsg) BlockType() slack.MessageBlockType {
+	t := (*obj)["type"]
+	if t != nil {
+		if tt, ok := t.(string); ok {
+			return slack.MessageBlockType(tt)
+		}
+	}
+	return ""
+}
+
 // HandleSlackEvent check service challenge
 func HandleSlackEvent(api *slack.Client, botID string, management *manager.Management) func(*gin.Context) {
 	return func(c *gin.Context) {
@@ -51,9 +65,21 @@ func HandleSlackEvent(api *slack.Client, botID string, management *manager.Manag
 					// process cmd
 					projectName := c.Param("project")
 					_, messageManager := management.Get(manager.MessageKind)
-					messageManager.Execute(projectName, cmd)
+					replyStr, err := messageManager.Execute(projectName, cmd)
+					if err != nil {
+						appruntime.Logger.Error(fmt.Sprintf("[slack] process cmd [%s] error : %v", cmd, err))
+						return
+					}
 
-					if _, _, err := api.PostMessage(ev.Channel, slack.MsgOptionText("Yes, hello "+cmd, true)); err != nil {
+					var (
+						reply  []*BlockMsg
+						blocks []slack.Block
+					)
+					json.Unmarshal([]byte(replyStr), &reply)
+					for _, block := range reply {
+						blocks = append(blocks, block)
+					}
+					if _, _, err := api.PostMessage(ev.Channel, slack.MsgOptionBlocks(blocks...)); err != nil {
 						appruntime.Logger.Error(err.Error())
 					}
 

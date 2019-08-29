@@ -9,8 +9,8 @@ import (
 // Manager ...
 type Manager interface {
 	Register(project string, config *model.SlackBotConfig) (bool, error)
-	Deregister(project string, configName string) (bool, error)
-	Execute(project string, cmd string) (string, error)
+	Deregister(project, configName string) (bool, error)
+	Execute(project, cmd string) (string, error)
 	DryRun(config *model.SlackBotConfig) (string, error)
 }
 
@@ -21,7 +21,7 @@ type Management struct {
 
 // Get Manager
 func (obj *Management) Get(kind string) (bool, Manager) {
-	kind = strings.Title(kind)
+	kind = strings.Title(strings.ToLower(kind))
 	return obj.managers[kind] != nil, obj.managers[kind]
 }
 

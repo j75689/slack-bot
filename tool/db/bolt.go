@@ -16,11 +16,11 @@ type BoltDB struct {
 	instance *bbolt.DB
 }
 
-// CheckTable check table exists
-func (db *BoltDB) CheckTable(table string) bool {
+// CheckProject check project exists
+func (db *BoltDB) CheckProject(project string) bool {
 
 	err := db.instance.Batch(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte(table))
+		b := tx.Bucket([]byte(project))
 		if b == nil {
 			return errors.New("not found")
 		}
@@ -30,15 +30,21 @@ func (db *BoltDB) CheckTable(table string) bool {
 }
 
 // Save insert or update document
-func (db *BoltDB) Save(table string, key string, data interface{}) error {
+func (db *BoltDB) Save(project, kind, key string, data interface{}) error {
 	err := db.instance.Update(func(tx *bbolt.Tx) error {
-		b, err := tx.CreateBucketIfNotExists([]byte(table))
+		b, err := tx.CreateBucketIfNotExists([]byte(project))
 		if err != nil {
 			return err
 		}
+		var documents map[string]interface{}
+		err = json.Unmarshal(b.Get([]byte(kind)), &documents)
+		if err != nil {
+			documents = make(map[string]interface{})
+		}
+		documents[kind] = data
 
-		if byteData, err := json.Marshal(data); err == nil {
-			err = b.Put([]byte(key), byteData)
+		if byteData, err := json.Marshal(documents); err == nil {
+			err = b.Put([]byte(kind), byteData)
 			if err != nil {
 				return err
 			}
@@ -50,51 +56,81 @@ func (db *BoltDB) Save(table string, key string, data interface{}) error {
 }
 
 // Find document by key
-func (db *BoltDB) Find(table string, key string) (data []byte, err error) {
+func (db *BoltDB) Find(project, kind, key string) (data []byte, err error) {
 
 	err = db.instance.Batch(func(tx *bbolt.Tx) error {
-		b, err := tx.CreateBucketIfNotExists([]byte(table))
+		b, err := tx.CreateBucketIfNotExists([]byte(project))
 		if err != nil {
 			return err
 		}
-		data = b.Get([]byte(key))
-		if data == nil {
-			err = fmt.Errorf("data [%v] not found", key)
+		var documents map[string]interface{}
+		err = json.Unmarshal(b.Get([]byte(kind)), &documents)
+		if err != nil {
+			return err
 		}
+
+		if documents[key] != nil {
+			data, err = json.Marshal(documents[key])
+		} else {
+			err = fmt.Errorf("data [%s] not exists", key)
+		}
+
 		return err
 	})
 
 	return
 }
 
-// FindAll document in table
-func (db *BoltDB) FindAll(table string, callback func(key string, data []byte)) (err error) {
+// FindAll document in project
+func (db *BoltDB) FindAll(project, kind string, callback func(key string, data []byte)) (err error) {
 	err = db.instance.Batch(func(tx *bbolt.Tx) error {
-		b, err := tx.CreateBucketIfNotExists([]byte(table))
+		b, err := tx.CreateBucketIfNotExists([]byte(project))
 		if err != nil {
 			return err
 		}
-		err = b.ForEach(func(k, v []byte) (err error) {
-			callback(string(k), v)
-			return
-		})
 
-		return err
+		var documents map[string]interface{}
+		err = json.Unmarshal(b.Get([]byte(kind)), &documents)
+		if err != nil {
+			return err
+		}
+
+		for k, v := range documents {
+			if byteData, err := json.Marshal(v); err == nil {
+				callback(k, byteData)
+			}
+		}
+
+		return nil
 	})
 	return
 }
 
 // Delete document
-func (db *BoltDB) Delete(table string, key string) (err error) {
+func (db *BoltDB) Delete(project, kind, key string) (err error) {
 	err = db.instance.Update(func(tx *bbolt.Tx) error {
-		b, err := tx.CreateBucketIfNotExists([]byte(table))
+		b, err := tx.CreateBucketIfNotExists([]byte(project))
 		if err != nil {
 			return err
 		}
-		err = b.Delete([]byte(key))
+
+		var documents map[string]interface{}
+		err = json.Unmarshal(b.Get([]byte(kind)), &documents)
 		if err != nil {
 			return err
 		}
+
+		// remove doc
+		delete(documents, key)
+
+		// save
+		if byteData, err := json.Marshal(documents); err == nil {
+			err = b.Put([]byte(kind), byteData)
+			if err != nil {
+				return err
+			}
+		}
+
 		return nil
 	})
 	return

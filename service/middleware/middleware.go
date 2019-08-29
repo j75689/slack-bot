@@ -10,6 +10,8 @@ import (
 func NoMethodHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.JSON(http.StatusMethodNotAllowed, gin.H{"error": "Method Not Allowed"})
+		c.Abort()
+		return
 	}
 }
 
@@ -17,5 +19,7 @@ func NoMethodHandler() gin.HandlerFunc {
 func NoRouteHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Page Not Found"})
+		c.Abort()
+		return
 	}
 }

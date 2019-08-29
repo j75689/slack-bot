@@ -15,28 +15,28 @@ type MongoDB struct {
 	instance *mongo.Client
 }
 
-// CheckTable check table exists
-func (db *MongoDB) CheckTable(table string) bool {
+// CheckProject check project exists
+func (db *MongoDB) CheckProject(project string) bool {
 	return false
 }
 
 // Save insert or update document
-func (db *MongoDB) Save(table string, key string, data interface{}) error {
+func (db *MongoDB) Save(project, kind, key string, data interface{}) error {
 	return nil
 }
 
 // Find document by key
-func (db *MongoDB) Find(table string, key string) ([]byte, error) {
+func (db *MongoDB) Find(project, kind, key string) ([]byte, error) {
 	return nil, nil
 }
 
-// FindAll document in table
-func (db *MongoDB) FindAll(table string, callback func(key string, data []byte)) error {
+// FindAll document in project
+func (db *MongoDB) FindAll(project, kind string, callback func(key string, data []byte)) error {
 	return nil
 }
 
 // Delete document
-func (db *MongoDB) Delete(collection string, key string) (err error) {
+func (db *MongoDB) Delete(project, kind, key string) (err error) {
 	return
 }
 
