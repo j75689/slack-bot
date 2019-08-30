@@ -5,3 +5,4 @@ slackbot
 *.db
 .DS_Store
 slack-bot
+slackbot-go

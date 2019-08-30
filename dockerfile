@@ -5,7 +5,7 @@ RUN echo "Asia/Taipei" > /etc/timezone
 RUN apk --no-cache add ca-certificates
 
 WORKDIR /app
-COPY ./slackbot-go ./app/slackbot-go
+COPY ./slackbot-go /app/slackbot-go
 RUN chmod 777 slackbot-go
 CMD ["./slackbot-go"]
 
