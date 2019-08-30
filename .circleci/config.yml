@@ -32,12 +32,10 @@ jobs:
           command: |
             docker build . -t $IMAGE_NAME:latest
   publish-latest:
+    machine: true
     environment:
       IMAGE_NAME: j75689/slackbot
-    docker:
-      - image: circleci/buildpack-deps:stretch
     steps:
-      - setup_remote_docker
       - run:
           name: Publish Docker Image to Docker Hub
           command: |
