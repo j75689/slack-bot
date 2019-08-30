@@ -44,6 +44,7 @@ workflows:
   build-workflow:
     jobs:
       - build:
+          context: dockerhub
           filters:
             branches:
               only: master
