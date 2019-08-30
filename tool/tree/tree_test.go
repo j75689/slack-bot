@@ -6,10 +6,8 @@ import (
 	"testing"
 )
 
-var tree = NewTree()
-
 func TestTree_Insert(t *testing.T) {
-
+	var tree = NewTree()
 	type args struct {
 		key   string
 		value []byte
@@ -90,6 +88,7 @@ func TestTree_Insert(t *testing.T) {
 }
 
 func TestTree_Update(t *testing.T) {
+	var tree = NewTree()
 	tree.Insert("search sid ${0}", []byte(`abc`))
 	type args struct {
 		key   string
@@ -143,7 +142,7 @@ func TestTree_Update(t *testing.T) {
 }
 
 func TestTree_Delete(t *testing.T) {
-
+	var tree = NewTree()
 	type args struct {
 		key   string
 		value []byte
@@ -205,7 +204,7 @@ func TestTree_Delete(t *testing.T) {
 }
 
 func TestTree_Search(t *testing.T) {
-
+	var tree = NewTree()
 	type args struct {
 		key   string
 		term  string
@@ -221,7 +220,7 @@ func TestTree_Search(t *testing.T) {
 			name: "Test Tree Search Case 1",
 			args: args{
 				key:   "search sid ${0}",
-				term:  "search sid abc",
+				term:  "search sid ${0}",
 				value: []byte(`data1`),
 			},
 			wantErr:   false,

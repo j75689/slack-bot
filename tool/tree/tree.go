@@ -2,6 +2,7 @@ package tree
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 	"strings"
 	"sync"
@@ -86,18 +87,19 @@ func (node *Node) Insert(keys []string, value []byte) error {
 
 	var children *Node
 
-	if node.Children[key] != nil {
-		children = node.Children[key]
-	} else {
-		children = newNode()
-		node.Children[key] = children
-	}
-
 	if node.isParmeter(key) {
 		if node.ParamterChild == nil {
 			node.ParamterChild = newNode()
 		}
 		children = node.ParamterChild
+		return children.Insert(keys[1:], value)
+	}
+
+	if node.Children[key] != nil {
+		children = node.Children[key]
+	} else {
+		children = newNode()
+		node.Children[key] = children
 	}
 
 	return children.Insert(keys[1:], value)
@@ -119,18 +121,19 @@ func (node *Node) Update(keys []string, value []byte) error {
 
 	var children *Node
 
-	if node.Children[key] != nil {
-		children = node.Children[key]
-	} else {
-		children = newNode()
-		node.Children[key] = children
-	}
-
 	if node.isParmeter(key) {
 		if node.ParamterChild == nil {
 			node.ParamterChild = newNode()
 		}
 		children = node.ParamterChild
+		return children.Update(keys[1:], value)
+	}
+
+	if node.Children[key] != nil {
+		children = node.Children[key]
+	} else {
+		children = newNode()
+		node.Children[key] = children
 	}
 
 	return children.Update(keys[1:], value)
@@ -189,13 +192,16 @@ func (node *Node) Search(keys []string) ([]byte, error) {
 	}
 
 	key := keys[0]
+	fmt.Println(key)
 	children := node.Children[key]
 	if children == nil {
 		if node.ParamterChild == nil {
 			return nil, errors.New("wrong key")
 		}
+		fmt.Println("paramter")
 		children = node.ParamterChild
 	}
+	fmt.Println(children)
 
 	return children.Search(keys[1:])
 }
