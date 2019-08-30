@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Invisibi-nd/slack-bot/tool/db"
+	"github.com/j75689/slack-bot/tool/db"
 
 	"github.com/kelseyhightower/envconfig"
 	"go.uber.org/zap"

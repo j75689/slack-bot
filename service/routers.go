@@ -3,10 +3,10 @@ package service
 import (
 	"time"
 
-	"github.com/Invisibi-nd/slack-bot/appruntime"
-	"github.com/Invisibi-nd/slack-bot/manager"
-	"github.com/Invisibi-nd/slack-bot/service/middleware"
-	"github.com/Invisibi-nd/slack-bot/service/modules"
+	"github.com/j75689/slack-bot/appruntime"
+	"github.com/j75689/slack-bot/manager"
+	"github.com/j75689/slack-bot/service/middleware"
+	"github.com/j75689/slack-bot/service/modules"
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/contrib/gzip"
 	"github.com/gin-gonic/gin"

@@ -3,7 +3,7 @@ package manager
 import (
 	"strings"
 
-	"github.com/Invisibi-nd/slack-bot/model"
+	"github.com/j75689/slack-bot/model"
 )
 
 // Manager ...

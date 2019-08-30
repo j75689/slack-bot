@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"net/http"
 
-	"github.com/Invisibi-nd/slack-bot/manager"
+	"github.com/j75689/slack-bot/manager"
 
-	"github.com/Invisibi-nd/slack-bot/appruntime"
+	"github.com/j75689/slack-bot/appruntime"
 
 	"gopkg.in/yaml.v2"
 
-	"github.com/Invisibi-nd/slack-bot/model"
+	"github.com/j75689/slack-bot/model"
 
 	"github.com/gin-gonic/gin"
 )

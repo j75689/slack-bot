@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/Invisibi-nd/slack-bot/appruntime"
-	"github.com/Invisibi-nd/slack-bot/manager"
+	"github.com/j75689/slack-bot/appruntime"
+	"github.com/j75689/slack-bot/manager"
 	"github.com/gin-gonic/gin"
 )
 

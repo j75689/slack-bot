@@ -1,6 +1,6 @@
 package handler
 
-import "github.com/Invisibi-nd/slack-bot/model"
+import "github.com/j75689/slack-bot/model"
 
 // ActionProcesser process plugin action
 type ActionProcesser struct {

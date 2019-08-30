@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/Invisibi-nd/slack-bot/model"
+	"github.com/j75689/slack-bot/model"
 )
 
 // StageType ...

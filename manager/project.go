@@ -3,8 +3,8 @@ package manager
 import (
 	"errors"
 
-	"github.com/Invisibi-nd/slack-bot/appruntime"
-	"github.com/Invisibi-nd/slack-bot/model"
+	"github.com/j75689/slack-bot/appruntime"
+	"github.com/j75689/slack-bot/model"
 )
 
 // ProjectManager manage project resource

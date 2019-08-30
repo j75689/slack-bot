@@ -7,8 +7,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Invisibi-nd/slack-bot/appruntime"
-	"github.com/Invisibi-nd/slack-bot/service"
+	"github.com/j75689/slack-bot/appruntime"
+	"github.com/j75689/slack-bot/service"
 )
 
 func main() {

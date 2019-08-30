@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"text/template"
 
-	"github.com/Invisibi-nd/slack-bot/model"
+	"github.com/j75689/slack-bot/model"
 )
 
 // RenderProcesser process render

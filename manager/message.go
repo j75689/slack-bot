@@ -1,10 +1,10 @@
 package manager
 
 import (
-	"github.com/Invisibi-nd/slack-bot/appruntime"
-	"github.com/Invisibi-nd/slack-bot/handler"
-	"github.com/Invisibi-nd/slack-bot/model"
-	"github.com/Invisibi-nd/slack-bot/tool/tree"
+	"github.com/j75689/slack-bot/appruntime"
+	"github.com/j75689/slack-bot/handler"
+	"github.com/j75689/slack-bot/model"
+	"github.com/j75689/slack-bot/tool/tree"
 	"gopkg.in/yaml.v2"
 )
 

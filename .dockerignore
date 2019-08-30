@@ -1,7 +1,7 @@
 logs
 __debug_bin
 .vscode
-slackbot
+go.sum
+slack-bot
 *.db
 .DS_Store
-slack-bot

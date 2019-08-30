@@ -3,7 +3,7 @@ package service
 import (
 	"fmt"
 
-	"github.com/Invisibi-nd/slack-bot/appruntime"
+	"github.com/j75689/slack-bot/appruntime"
 )
 
 // Start Server

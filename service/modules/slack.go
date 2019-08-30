@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/Invisibi-nd/slack-bot/appruntime"
-	"github.com/Invisibi-nd/slack-bot/manager"
+	"github.com/j75689/slack-bot/appruntime"
+	"github.com/j75689/slack-bot/manager"
 	"github.com/nlopes/slack"
 	"github.com/nlopes/slack/slackevents"
 

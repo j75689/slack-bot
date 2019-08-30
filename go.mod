@@ -1,4 +1,4 @@
-module github.com/Invisibi-nd/slack-bot
+module github.com/j75689/slack-bot
 
 go 1.12
 
@@ -14,7 +14,7 @@ require (
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/lusis/go-slackbot v0.0.0-20180109053408-401027ccfef5 // indirect
 	github.com/lusis/slack-test v0.0.0-20190426140909-c40012f20018 // indirect
-	github.com/nlopes/slack v0.5.0
+	github.com/nlopes/slack v0.5.1-0.20190823181507-4411ac942311
 	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
@@ -23,4 +23,5 @@ require (
 	go.uber.org/zap v1.10.0
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
+	gopkg.in/yaml.v2 v2.2.2
 )
