@@ -54,9 +54,14 @@ func (obj *MessageManager) Register(config *model.SlackBotConfig) (ok bool, err 
 
 // Deregister config
 func (obj *MessageManager) Deregister(config *model.SlackBotConfig) (ok bool, err error) {
+	var oldconfig model.SlackBotConfig
+	data, _ := appruntime.DB.Find(config.MetaData.Project, kind.Message, config.MetaData.Name)
+	if err = yaml.Unmarshal(data, &oldconfig); err != nil || data == nil {
+		return false, err
+	}
 
 	index := obj.findIndex(config.MetaData.Project)
-	for _, cmd := range config.Task.Command {
+	for _, cmd := range oldconfig.Task.Command {
 		index.Delete(cmd)
 	}
 

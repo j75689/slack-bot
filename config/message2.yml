@@ -8,7 +8,9 @@ task:
     Title: Hello World
     data: Slack Bot
   command: 
-    - hi!
+    - hey
+    - Hey
+
   stage:
     - type: render
       template: |

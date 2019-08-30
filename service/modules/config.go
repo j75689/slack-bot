@@ -5,6 +5,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/j75689/slack-bot/appruntime"
+
 	"github.com/gin-gonic/gin"
 	"github.com/j75689/slack-bot/manager"
 	"github.com/j75689/slack-bot/model"
@@ -27,6 +29,12 @@ func HandleApplyConfig(management *manager.Management) func(*gin.Context) {
 				break
 			}
 			if ok, manager := management.Get(config.Kind); ok {
+				// reomve old cmd
+				_, err = manager.Deregister(&config)
+				if err != nil {
+					appruntime.Logger.Error("deregister error: " + err.Error())
+				}
+				// register new cmd
 				_, err = manager.Register(&config)
 				if err != nil {
 					break
