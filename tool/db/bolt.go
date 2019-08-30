@@ -1,11 +1,12 @@
 package db
 
 import (
-	"encoding/json"
-	"errors"
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/j75689/slack-bot/kind"
+	"gopkg.in/yaml.v2"
 
 	"go.etcd.io/bbolt"
 )
@@ -18,15 +19,8 @@ type BoltDB struct {
 
 // CheckProject check project exists
 func (db *BoltDB) CheckProject(project string) bool {
-
-	err := db.instance.Batch(func(tx *bbolt.Tx) error {
-		b := tx.Bucket([]byte(project))
-		if b == nil {
-			return errors.New("not found")
-		}
-		return nil
-	})
-	return err == nil
+	data, err := db.Find(project, kind.Project, project)
+	return err == nil && data != nil
 }
 
 // Save insert or update document
@@ -36,18 +30,20 @@ func (db *BoltDB) Save(project, kind, key string, data interface{}) error {
 		if err != nil {
 			return err
 		}
-		var documents map[string]interface{}
-		err = json.Unmarshal(b.Get([]byte(kind)), &documents)
-		if err != nil {
-			documents = make(map[string]interface{})
-		}
-		documents[kind] = data
 
-		if byteData, err := json.Marshal(documents); err == nil {
-			err = b.Put([]byte(kind), byteData)
-			if err != nil {
-				return err
-			}
+		var documents = make(map[string]interface{})
+		err = yaml.Unmarshal(b.Get([]byte(kind)), &documents)
+
+		documents[key] = data
+
+		byteData, err := yaml.Marshal(documents)
+		if err != nil {
+			return err
+		}
+
+		err = b.Put([]byte(kind), byteData)
+		if err != nil {
+			return err
 		}
 
 		return nil
@@ -63,14 +59,15 @@ func (db *BoltDB) Find(project, kind, key string) (data []byte, err error) {
 		if err != nil {
 			return err
 		}
+
 		var documents map[string]interface{}
-		err = json.Unmarshal(b.Get([]byte(kind)), &documents)
+		err = yaml.Unmarshal(b.Get([]byte(kind)), &documents)
 		if err != nil {
 			return err
 		}
 
 		if documents[key] != nil {
-			data, err = json.Marshal(documents[key])
+			data, err = yaml.Marshal(documents[key])
 		} else {
 			err = fmt.Errorf("data [%s] not exists", key)
 		}
@@ -90,13 +87,13 @@ func (db *BoltDB) FindAll(project, kind string, callback func(key string, data [
 		}
 
 		var documents map[string]interface{}
-		err = json.Unmarshal(b.Get([]byte(kind)), &documents)
+		err = yaml.Unmarshal(b.Get([]byte(kind)), &documents)
 		if err != nil {
 			return err
 		}
 
 		for k, v := range documents {
-			if byteData, err := json.Marshal(v); err == nil {
+			if byteData, err := yaml.Marshal(v); err == nil {
 				callback(k, byteData)
 			}
 		}
@@ -115,7 +112,7 @@ func (db *BoltDB) Delete(project, kind, key string) (err error) {
 		}
 
 		var documents map[string]interface{}
-		err = json.Unmarshal(b.Get([]byte(kind)), &documents)
+		err = yaml.Unmarshal(b.Get([]byte(kind)), &documents)
 		if err != nil {
 			return err
 		}
@@ -124,7 +121,7 @@ func (db *BoltDB) Delete(project, kind, key string) (err error) {
 		delete(documents, key)
 
 		// save
-		if byteData, err := json.Marshal(documents); err == nil {
+		if byteData, err := yaml.Marshal(documents); err == nil {
 			err = b.Put([]byte(kind), byteData)
 			if err != nil {
 				return err

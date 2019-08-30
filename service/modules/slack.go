@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/j75689/slack-bot/kind"
+
 	"github.com/j75689/slack-bot/appruntime"
 	"github.com/j75689/slack-bot/manager"
 	"github.com/nlopes/slack"
@@ -64,7 +66,7 @@ func HandleSlackEvent(api *slack.Client, botID string, management *manager.Manag
 
 					// process cmd
 					projectName := c.Param("project")
-					_, messageManager := management.Get(manager.MessageKind)
+					_, messageManager := management.Get(kind.Message)
 					replyStr, err := messageManager.Execute(projectName, cmd)
 					if err != nil {
 						appruntime.Logger.Error(fmt.Sprintf("[slack] process cmd [%s] error : %v", cmd, err))

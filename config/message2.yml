@@ -1,0 +1,35 @@
+version: 1
+kind: Message
+metadata:
+  name: ev-test
+  project: ev
+task:
+  variables:
+    Title: Hello World
+    data: Slack Bot
+  command: 
+    - hi!
+  stage:
+    - type: render
+      template: |
+        [
+          {
+            "type": "context",
+            "elements": [
+              {
+                "type": "mrkdwn",
+                "text": "{{.Title}}"
+              }
+            ]
+          },
+            {
+            "type": "context",
+            "elements": [
+              {
+                "type": "mrkdwn",
+                "text": "{{.data}}"
+              }
+            ]
+          }
+        ]
+

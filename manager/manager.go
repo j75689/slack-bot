@@ -3,13 +3,14 @@ package manager
 import (
 	"strings"
 
+	"github.com/j75689/slack-bot/kind"
 	"github.com/j75689/slack-bot/model"
 )
 
 // Manager ...
 type Manager interface {
-	Register(project string, config *model.SlackBotConfig) (bool, error)
-	Deregister(project, configName string) (bool, error)
+	Register(config *model.SlackBotConfig) (bool, error)
+	Deregister(config *model.SlackBotConfig) (bool, error)
 	Execute(project, cmd string) (string, error)
 	DryRun(config *model.SlackBotConfig) (string, error)
 }
@@ -29,9 +30,9 @@ func (obj *Management) Get(kind string) (bool, Manager) {
 func NewManagement() *Management {
 	return &Management{
 		managers: map[string]Manager{
-			ProjectKind:     newProjectManager(),
-			MessageKind:     newMessageManager(),
-			InteractiveKind: nil,
+			kind.Project:     newProjectManager(),
+			kind.Message:     newMessageManager(),
+			kind.Interactive: nil,
 		},
 	}
 }

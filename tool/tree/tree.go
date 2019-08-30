@@ -2,7 +2,6 @@ package tree
 
 import (
 	"errors"
-	"fmt"
 	"regexp"
 	"strings"
 	"sync"
@@ -192,16 +191,13 @@ func (node *Node) Search(keys []string) ([]byte, error) {
 	}
 
 	key := keys[0]
-	fmt.Println(key)
 	children := node.Children[key]
 	if children == nil {
 		if node.ParamterChild == nil {
 			return nil, errors.New("wrong key")
 		}
-		fmt.Println("paramter")
 		children = node.ParamterChild
 	}
-	fmt.Println(children)
 
 	return children.Search(keys[1:])
 }

@@ -3,13 +3,13 @@ package service
 import (
 	"time"
 
+	ginzap "github.com/gin-contrib/zap"
+	"github.com/gin-gonic/contrib/gzip"
+	"github.com/gin-gonic/gin"
 	"github.com/j75689/slack-bot/appruntime"
 	"github.com/j75689/slack-bot/manager"
 	"github.com/j75689/slack-bot/service/middleware"
 	"github.com/j75689/slack-bot/service/modules"
-	ginzap "github.com/gin-contrib/zap"
-	"github.com/gin-gonic/contrib/gzip"
-	"github.com/gin-gonic/gin"
 	"github.com/nlopes/slack"
 )
 
@@ -39,7 +39,7 @@ func register(app *gin.Engine) {
 	management := manager.NewManagement()
 	// slack hook
 	slackhook := app.Group("/slack")
-	//slackhook.Use(middleware.VerifyProjectMiddleware(management))
+	slackhook.Use(middleware.VerifyProjectMiddleware(management))
 	{
 		api := slack.New(appruntime.Env.SlackBotOauthToken)
 		authResp, err := api.AuthTest()
@@ -58,7 +58,7 @@ func register(app *gin.Engine) {
 	// api
 	api := app.Group("/api/v1")
 	{
-		api.POST("/config/apply")
-		api.POST("/config/delete")
+		api.POST("/config/apply", modules.HandleApplyConfig(management))
+		api.POST("/config/delete", modules.HandleDeleteConfig(management))
 	}
 }

@@ -3,6 +3,8 @@ package manager
 import (
 	"errors"
 
+	"github.com/j75689/slack-bot/kind"
+
 	"github.com/j75689/slack-bot/appruntime"
 	"github.com/j75689/slack-bot/model"
 )
@@ -17,14 +19,14 @@ func (obj *ProjectManager) VerifyProject(project string) bool {
 }
 
 // Register config
-func (obj *ProjectManager) Register(project string, config *model.SlackBotConfig) (ok bool, err error) {
-	err = appruntime.DB.Save(project, config.Kind, config.MetaData.Name, config)
+func (obj *ProjectManager) Register(config *model.SlackBotConfig) (ok bool, err error) {
+	err = appruntime.DB.Save(config.MetaData.Name, config.Kind, config.MetaData.Name, config)
 	return err == nil, err
 }
 
 // Deregister config
-func (obj *ProjectManager) Deregister(project, configName string) (ok bool, err error) {
-	err = appruntime.DB.Delete(project, ProjectKind, configName)
+func (obj *ProjectManager) Deregister(config *model.SlackBotConfig) (ok bool, err error) {
+	err = appruntime.DB.Delete(config.MetaData.Name, kind.Project, config.MetaData.Name)
 	return err == nil, err
 }
 

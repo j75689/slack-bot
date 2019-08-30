@@ -1,6 +1,8 @@
 package handler
 
-import "github.com/j75689/slack-bot/model"
+import (
+	"github.com/j75689/slack-bot/model"
+)
 
 // SlackMessageHandler process Slack message
 type SlackMessageHandler struct {

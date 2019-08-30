@@ -3,6 +3,7 @@ package manager
 import (
 	"github.com/j75689/slack-bot/appruntime"
 	"github.com/j75689/slack-bot/handler"
+	"github.com/j75689/slack-bot/kind"
 	"github.com/j75689/slack-bot/model"
 	"github.com/j75689/slack-bot/tool/tree"
 	"gopkg.in/yaml.v2"
@@ -24,16 +25,20 @@ func (obj *MessageManager) findIndex(project string) (index *tree.Tree) {
 }
 
 // Register config
-func (obj *MessageManager) Register(project string, config *model.SlackBotConfig) (ok bool, err error) {
+func (obj *MessageManager) Register(config *model.SlackBotConfig) (ok bool, err error) {
 	rollback := false
-	index := obj.findIndex(project)
+	index := obj.findIndex(config.MetaData.Project)
 	for _, cmd := range config.Task.Command {
 		err = index.Insert(cmd, []byte(config.MetaData.Name))
 	}
 	rollback = err != nil
 
 	if !rollback {
-		err = appruntime.DB.Save(project, config.Kind, config.MetaData.Name, config)
+		err = appruntime.DB.Save(config.MetaData.Project, config.Kind, config.MetaData.Name, config)
+		if err != nil {
+			appruntime.Logger.Error(err.Error())
+		}
+
 		rollback = err != nil
 	}
 
@@ -48,18 +53,14 @@ func (obj *MessageManager) Register(project string, config *model.SlackBotConfig
 }
 
 // Deregister config
-func (obj *MessageManager) Deregister(project, configName string) (ok bool, err error) {
-	var config model.SlackBotConfig
-	data, _ := appruntime.DB.Find(project, MessageKind, configName)
-	if err = yaml.Unmarshal(data, &config); err != nil {
-		return false, err
-	}
-	index := obj.findIndex(project)
+func (obj *MessageManager) Deregister(config *model.SlackBotConfig) (ok bool, err error) {
+
+	index := obj.findIndex(config.MetaData.Project)
 	for _, cmd := range config.Task.Command {
 		index.Delete(cmd)
 	}
 
-	appruntime.DB.Delete(project, MessageKind, configName)
+	appruntime.DB.Delete(config.MetaData.Project, kind.Message, config.MetaData.Name)
 
 	return true, nil
 }
@@ -73,7 +74,12 @@ func (obj *MessageManager) Execute(project, cmd string) (reply string, err error
 	}
 
 	var config model.SlackBotConfig
-	data, _ := appruntime.DB.Find(project, MessageKind, string(configName))
+	data, err := appruntime.DB.Find(project, kind.Message, string(configName))
+
+	if err != nil {
+		return "", err
+	}
+
 	if err = yaml.Unmarshal(data, &config); err != nil {
 		return "", err
 	}
