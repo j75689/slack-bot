@@ -32,10 +32,13 @@ jobs:
           command: |
             docker build . -t $IMAGE_NAME:latest
   publish-latest:
-    machine: true
     environment:
       IMAGE_NAME: j75689/slackbot
+    docker:
+      - image: docker:stable
     steps:
+      - checkout
+      - setup_remote_docker
       - run:
           name: Publish Docker Image to Docker Hub
           command: |
@@ -46,6 +49,10 @@ workflows:
   build-workflow:
     jobs:
       - build:
+          filters:
+            branches:
+              only: master
+      - publish-latest:
           context: dockerhub
           filters:
             branches:
