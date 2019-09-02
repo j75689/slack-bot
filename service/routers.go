@@ -73,7 +73,7 @@ func initConfig(management *manager.Management) {
 	appruntime.DB.FindAll(func(project, kind, key string, data []byte) {
 		appruntime.Logger.Info(fmt.Sprintf("load config project:[%s] kind:[%s] name:[%s]", project, kind, key))
 		var config model.SlackBotConfig
-		appruntime.Logger.Debug("unmarshal config ...")
+		appruntime.Logger.Debug("unmarshal config ... \n" + string(data))
 		if err := yaml.Unmarshal(data, &config); err != nil {
 			appruntime.Logger.Error("load config error: " + err.Error())
 			return

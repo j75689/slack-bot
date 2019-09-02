@@ -92,10 +92,10 @@ func (db *BoltDB) FindAll(callback func(project, kind, key string, data []byte))
 	err = db.instance.Batch(func(tx *bbolt.Tx) error {
 		// loop bucket
 		err = tx.ForEach(func(project []byte, b *bbolt.Bucket) error {
-
 			var documents map[string]interface{}
 			// loop kind
 			err = b.ForEach(func(kind, data []byte) error {
+				documents = make(map[string]interface{})
 				err = yaml.Unmarshal(b.Get(kind), &documents)
 				if err != nil {
 					return err
