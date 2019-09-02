@@ -24,3 +24,7 @@ func (obj *RenderProcesser) Run(stage *model.Stage, variables *map[string]interf
 	}
 	return data.String(), nil
 }
+
+func newRenderProcesser() *RenderProcesser {
+	return &RenderProcesser{}
+}

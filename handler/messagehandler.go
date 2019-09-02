@@ -27,7 +27,7 @@ func NewSlackMessageHandler() *SlackMessageHandler {
 	return &SlackMessageHandler{
 		Processer: map[StageType]StageRunner{
 			renderTag: &RenderProcesser{},
-			actionTag: &ActionProcesser{},
+			actionTag: newActionProcesser(),
 		},
 	}
 }

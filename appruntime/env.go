@@ -17,4 +17,6 @@ type env struct {
 	DBPort   string `envconfig:"DB_PORT"`
 	DBUser   string `envconfig:"DB_USER"`
 	DBPass   string `envconfig:"DB_PASS"`
+	// Plugin
+	PluginPath string `envconfig:"PLUGIN_PATH" default:"./plugins/"`
 }
