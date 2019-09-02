@@ -30,8 +30,8 @@ func (db *MongoDB) Find(project, kind, key string) ([]byte, error) {
 	return nil, nil
 }
 
-// FindAll document in project
-func (db *MongoDB) FindAll(project, kind string, callback func(key string, data []byte)) error {
+// FindAll document
+func (db *MongoDB) FindAll(callback func(project, kind, key string, data []byte)) error {
 	return nil
 }
 

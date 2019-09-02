@@ -1,7 +1,12 @@
 package service
 
 import (
+	"fmt"
 	"time"
+
+	"gopkg.in/yaml.v2"
+
+	"github.com/j75689/slack-bot/model"
 
 	ginzap "github.com/gin-contrib/zap"
 	"github.com/gin-gonic/contrib/gzip"
@@ -37,6 +42,7 @@ func register(app *gin.Engine) {
 		health.Any("", modules.HandleHealthCheck())
 	}
 	management := manager.NewManagement()
+	initConfig(management)
 	// slack hook
 	slackhook := app.Group("/slack")
 	slackhook.Use(middleware.VerifyProjectMiddleware(management))
@@ -61,4 +67,27 @@ func register(app *gin.Engine) {
 		api.POST("/config/apply", modules.HandleApplyConfig(management))
 		api.POST("/config/delete", modules.HandleDeleteConfig(management))
 	}
+}
+
+func initConfig(management *manager.Management) {
+	appruntime.DB.FindAll(func(project, kind, key string, data []byte) {
+		appruntime.Logger.Info(fmt.Sprintf("load config project:[%s] kind:[%s] name:[%s]", project, kind, key))
+		var config model.SlackBotConfig
+		appruntime.Logger.Debug("unmarshal config ...")
+		if err := yaml.Unmarshal(data, &config); err != nil {
+			appruntime.Logger.Error("load config error: " + err.Error())
+			return
+		}
+
+		appruntime.Logger.Debug("find config manager ...")
+		if ok, manager := management.Get(config.Kind); ok {
+			appruntime.Logger.Debug("register config ...")
+			// register new cmd
+			_, err := manager.Register(&config)
+			if err != nil {
+				appruntime.Logger.Error("register config error: " + err.Error())
+			}
+			appruntime.Logger.Debug("register config complete")
+		}
+	})
 }

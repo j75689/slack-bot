@@ -78,28 +78,50 @@ func (db *BoltDB) Find(project, kind, key string) (data []byte, err error) {
 	return
 }
 
-// FindAll document in project
-func (db *BoltDB) FindAll(project, kind string, callback func(key string, data []byte)) (err error) {
+// FindAll document
+func (db *BoltDB) FindAll(callback func(project, kind, key string, data []byte)) (err error) {
+
+	type Temp struct {
+		Project string
+		Kind    string
+		Key     string
+		Data    []byte
+	}
+	var tempdata = []*Temp{}
+
 	err = db.instance.Batch(func(tx *bbolt.Tx) error {
-		b, err := tx.CreateBucketIfNotExists([]byte(project))
-		if err != nil {
+		// loop bucket
+		err = tx.ForEach(func(project []byte, b *bbolt.Bucket) error {
+
+			var documents map[string]interface{}
+			// loop kind
+			err = b.ForEach(func(kind, data []byte) error {
+				err = yaml.Unmarshal(b.Get(kind), &documents)
+				if err != nil {
+					return err
+				}
+				// loop document
+				for k, v := range documents {
+					if byteData, err := yaml.Marshal(v); err == nil {
+						tempdata = append(tempdata, &Temp{
+							Project: string(project),
+							Kind:    string(kind),
+							Key:     k,
+							Data:    byteData,
+						})
+					}
+				}
+				return err
+			})
 			return err
-		}
-
-		var documents map[string]interface{}
-		err = yaml.Unmarshal(b.Get([]byte(kind)), &documents)
-		if err != nil {
-			return err
-		}
-
-		for k, v := range documents {
-			if byteData, err := yaml.Marshal(v); err == nil {
-				callback(k, byteData)
-			}
-		}
-
-		return nil
+		})
+		return err
 	})
+
+	for _, temp := range tempdata {
+		callback(temp.Project, temp.Kind, temp.Key, temp.Data)
+	}
+
 	return
 }
 

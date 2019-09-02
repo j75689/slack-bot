@@ -24,7 +24,7 @@ type Storage interface {
 	CheckProject(project string) bool
 	Save(project, kind, key string, data interface{}) error
 	Find(project, kind, key string) ([]byte, error)
-	FindAll(project, kind string, callback func(key string, data []byte)) error
+	FindAll(callback func(project, kind, key string, data []byte)) error
 	Delete(project, kind, key string) error
 	Connect(conn *Connection, args ...interface{}) error
 	Close() error
