@@ -23,8 +23,9 @@ type Pool struct {
 func (pool *Pool) Execute(plugin string, paramter []byte, variable *map[string]interface{}, output func(data interface{})) error {
 
 	if p, ok := pool.Load(plugin); ok {
-		pluginfunc := p.(Plugin)
-		pluginfunc(paramter, variable, output, appruntime.Logger)
+		if pluginfunc, ok := p.(Plugin); ok {
+			pluginfunc(paramter, variable, output, appruntime.Logger)
+		}
 		return nil
 	}
 	return fmt.Errorf("plugin [%s] not found", plugin)
@@ -32,7 +33,9 @@ func (pool *Pool) Execute(plugin string, paramter []byte, variable *map[string]i
 
 // Load ...
 func Load(path string) (pool *Pool) {
-	pool = &Pool{}
+	pool = &Pool{
+		Map: &sync.Map{},
+	}
 	// fix Path
 	if !strings.HasSuffix(path, "/") {
 		path = path + "/"
