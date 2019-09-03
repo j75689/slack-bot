@@ -1,10 +1,13 @@
 package manager
 
 import (
+	"fmt"
+
 	"github.com/j75689/slack-bot/appruntime"
 	"github.com/j75689/slack-bot/handler"
 	"github.com/j75689/slack-bot/kind"
 	"github.com/j75689/slack-bot/model"
+	"github.com/j75689/slack-bot/tool"
 	"github.com/j75689/slack-bot/tool/tree"
 	"gopkg.in/yaml.v2"
 )
@@ -88,6 +91,9 @@ func (obj *MessageManager) Execute(project, cmd string) (reply string, err error
 	if err = yaml.Unmarshal(data, &config); err != nil {
 		return "", err
 	}
+
+	tool.ResolveVariables(cmd, config.Task.Command, &config.Task.Variables)
+	fmt.Println(config.Task.Variables)
 
 	return obj.MessageHandler.Do(&config)
 
