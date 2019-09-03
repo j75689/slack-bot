@@ -28,8 +28,7 @@ task:
             },
           }
         
-      output:
-        data: result
+      output: result
     - type: render
       template: |
         [

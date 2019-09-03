@@ -12,7 +12,7 @@ import (
 )
 
 // Plugin ...
-type Plugin func(paramter []byte, variable *map[string]interface{}, logger *zap.Logger)
+type Plugin func(paramter []byte, variable *map[string]interface{}, output func(data interface{}), logger *zap.Logger)
 
 // Pool ...
 type Pool struct {
@@ -20,11 +20,11 @@ type Pool struct {
 }
 
 // Execute ...
-func (pool *Pool) Execute(plugin string, paramter []byte, variable *map[string]interface{}) error {
+func (pool *Pool) Execute(plugin string, paramter []byte, variable *map[string]interface{}, output func(data interface{})) error {
 
 	if p, ok := pool.Load(plugin); ok {
 		pluginfunc := p.(Plugin)
-		pluginfunc(paramter, variable, appruntime.Logger)
+		pluginfunc(paramter, variable, output, appruntime.Logger)
 		return nil
 	}
 	return fmt.Errorf("plugin [%s] not found", plugin)

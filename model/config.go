@@ -28,5 +28,6 @@ type Stage struct {
 	Type     string                 `yaml:"type"` // render, action
 	Plugin   string                 `yaml:"plugin,omitempty"`
 	Paramter map[string]interface{} `yaml:"paramter,omitempty"`
+	Output   string                 `yaml:"output,omitempty"`   // output value name
 	Template string                 `yaml:"template,omitempty"` // for render
 }

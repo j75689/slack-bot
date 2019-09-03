@@ -4,6 +4,7 @@ import (
 	"github.com/j75689/slack-bot/appruntime"
 	"github.com/j75689/slack-bot/model"
 	"github.com/j75689/slack-bot/plugin"
+	"gopkg.in/yaml.v2"
 )
 
 // ActionProcesser process plugin action
@@ -13,7 +14,10 @@ type ActionProcesser struct {
 
 // Run action stage
 func (obj *ActionProcesser) Run(stage *model.Stage, variables *map[string]interface{}) (string, error) {
-	return "", nil
+	paramter, _ := yaml.Marshal(stage.Paramter)
+	return "", obj.Plugins.Execute(stage.Plugin, paramter, variables, func(data interface{}) {
+		(*variables)[stage.Output] = data
+	})
 }
 
 func newActionProcesser() *ActionProcesser {
