@@ -15,6 +15,7 @@ func ResolveVariables(cmd string, pattern []string, variables *map[string]interf
 	points := make([]float64, len(pattern))
 	r := regexp.MustCompile(`(\w+)|'(.*?)'|"(.*?)"|(\$\{.*?\})`)
 	cmdarray := r.FindAllString(cmd, -1)
+	// calculate points
 	for pointIdx, pat := range pattern {
 		wg.Add(1)
 		go func(pat string, pointIdx int, points *[]float64) {
@@ -48,6 +49,7 @@ func ResolveVariables(cmd string, pattern []string, variables *map[string]interf
 		}
 	}
 
+	// assign paramter
 	for idx, pat := range matchPattern {
 		if strings.HasPrefix(pat, `${`) && strings.HasSuffix(pat, `}`) {
 			v := cmdarray[idx]
