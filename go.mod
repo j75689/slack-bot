@@ -4,6 +4,9 @@ go 1.12
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
+	github.com/elastic/go-elasticsearch/v5 v5.6.2-0.20190731061920-3e19c2a74c9d
+	github.com/elastic/go-elasticsearch/v6 v6.8.3-0.20190731061920-efbed2e4c2f8
+	github.com/elastic/go-elasticsearch/v7 v7.3.1-0.20190801065659-92cf325b6bfb
 	github.com/gin-contrib/zap v0.0.0-20190528085758-3cc18cd8fce3
 	github.com/gin-gonic/contrib v0.0.0-20190526021735-7fb7810ed2a0
 	github.com/gin-gonic/gin v1.4.0
@@ -22,4 +25,5 @@ require (
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 	gopkg.in/yaml.v2 v2.2.2
+
 )

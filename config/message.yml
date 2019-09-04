@@ -6,28 +6,26 @@ metadata:
 task:
   variables:
     Title: Would you like to play a game?
-    data: data1
   command: 
     - find sid ${input1}
   stage:
     - type: action
-      plugin: ElasticSearch
+      plugin: ElasticSearch6
       paramter: 
-        variables:
-          query_id: ${input1}
+        addresses:
+          - http://127.0.0.1:9200
+        # user: 
+        # pass:
+        index: dev
         query: |+
           {
-            index: _evp,
-            size: 1,
-            body: {
-              query: {
-                match: {
-                  'sidSeq.keyword': ${query_id},
-                }
-              },
-            },
+            "query": {
+              "match": {
+                "_id":"{{.input1}}"
+              }
+            }
           }
-        
+
       output: result
     - type: render
       template: |
@@ -46,7 +44,7 @@ task:
             "elements": [
               {
                 "type": "mrkdwn",
-                "text": "{{.data}}"
+                "text": "{{.result.hits.total}}"
               }
             ]
           }

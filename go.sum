@@ -3,6 +3,16 @@ github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/elastic/go-elasticsearch/v5 v5.6.1 h1:RnL2wcXepOT5SdoKMMO1j1OBX0vxHYbBtkQNL2E3xs4=
+github.com/elastic/go-elasticsearch/v5 v5.6.1/go.mod h1:r7uV7HidpfkYh7D8SB4lkS13TNlNy3oa5GNmTZvuVqY=
+github.com/elastic/go-elasticsearch/v5 v5.6.2-0.20190731061920-3e19c2a74c9d/go.mod h1:r7uV7HidpfkYh7D8SB4lkS13TNlNy3oa5GNmTZvuVqY=
+github.com/elastic/go-elasticsearch/v6 v6.8.2 h1:rp5DGrd63V5c6nHLjF6QEXUpZSvs0+QM3ld7m9VhV2g=
+github.com/elastic/go-elasticsearch/v6 v6.8.2/go.mod h1:UwaDJsD3rWLM5rKNFzv9hgox93HoX8utj1kxD9aFUcI=
+github.com/elastic/go-elasticsearch/v6 v6.8.3-0.20190731061920-efbed2e4c2f8 h1:2kA1vErEQ9VBcXP6xxc7piv49SAhf4DlaXg4H98vkUQ=
+github.com/elastic/go-elasticsearch/v6 v6.8.3-0.20190731061920-efbed2e4c2f8/go.mod h1:UwaDJsD3rWLM5rKNFzv9hgox93HoX8utj1kxD9aFUcI=
+github.com/elastic/go-elasticsearch/v7 v7.3.0 h1:H29Nqf9cB9dVxX6LwS+zTDC2D4t9s+8dK8ln4HPS9rw=
+github.com/elastic/go-elasticsearch/v7 v7.3.0/go.mod h1:OJ4wdbtDNk5g503kvlHLyErCgQwwzmDtaFC4XyOxXA4=
+github.com/elastic/go-elasticsearch/v7 v7.3.1-0.20190801065659-92cf325b6bfb/go.mod h1:OJ4wdbtDNk5g503kvlHLyErCgQwwzmDtaFC4XyOxXA4=
 github.com/gin-contrib/sse v0.0.0-20190301062529-5545eab6dad3 h1:t8FVkw33L+wilf2QiWkw0UV77qRpcH/JHPKGpKa2E8g=
 github.com/gin-contrib/sse v0.0.0-20190301062529-5545eab6dad3/go.mod h1:VJ0WA2NBN22VlZ2dKZQPAPnyWw5XTlK1KymzLKsr59s=
 github.com/gin-contrib/zap v0.0.0-20190528085758-3cc18cd8fce3 h1:9Y2UtI9UOzJb4diDdyRB3Un2w72W53qxLofWcioOW3k=

@@ -21,12 +21,12 @@ type Pool struct {
 
 // Execute ...
 func (pool *Pool) Execute(plugin string, paramter []byte, variable *map[string]interface{}, output func(data interface{})) error {
-
 	if p, ok := pool.Load(plugin); ok {
 		if pluginfunc, ok := p.(Plugin); ok {
 			pluginfunc(paramter, variable, output, appruntime.Logger)
+			return nil
 		}
-		return nil
+		return fmt.Errorf("plugin [%s] load error", plugin)
 	}
 	return fmt.Errorf("plugin [%s] not found", plugin)
 }
@@ -53,11 +53,11 @@ func Load(path string) (pool *Pool) {
 		if !f.IsDir() {
 			var runFuncName = f.Name()
 
-			appruntime.Logger.Info(fmt.Sprintf("loading plugin [%s]", runFuncName))
-
 			if !strings.HasSuffix(f.Name(), ".so") {
 				continue
 			}
+
+			appruntime.Logger.Info(fmt.Sprintf("loading plugin [%s]", runFuncName))
 
 			if strings.LastIndexAny(runFuncName, ".") > -1 {
 				runFuncName = runFuncName[0:strings.LastIndexAny(runFuncName, ".")]
@@ -75,10 +75,10 @@ func Load(path string) (pool *Pool) {
 				continue
 			}
 
-			if f, ok := function.(Plugin); ok {
-				pool.Store(runFuncName, f)
+			if f, ok := function.(func(paramter []byte, variable *map[string]interface{}, output func(data interface{}), logger *zap.Logger)); ok {
+				pool.Store(runFuncName, Plugin(f))
 			} else {
-				appruntime.Logger.Error(fmt.Sprintf("reflect func [%s] error: %v", runFuncName, err))
+				appruntime.Logger.Error(fmt.Sprintf("reflect func [%s] failed", runFuncName))
 			}
 
 		}

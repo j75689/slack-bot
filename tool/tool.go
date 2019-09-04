@@ -1,13 +1,37 @@
 package tool
 
 import (
+	"bytes"
 	"fmt"
+	"html"
+	"html/template"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 
 	"github.com/j75689/slack-bot/tool/valuechain"
 )
+
+// ExcuteGoTemplate parse and excute template
+func ExcuteGoTemplate(reply string, variables map[string]interface{}) (string, error) {
+	tmpl := template.New("temp")
+	tmpl.Parse(reply)
+	var (
+		data       bytes.Buffer
+		dataString string
+	)
+	err := tmpl.Execute(&data, variables)
+	if err != nil {
+		return reply, fmt.Errorf("Excute Template Error: %v", err)
+	}
+	dataString, err = strconv.Unquote(data.String())
+	if err != nil {
+		dataString = data.String()
+	}
+	dataString = html.UnescapeString(dataString)
+	return dataString, nil
+}
 
 // ResolveVariables assign cmd variable
 // calculate point

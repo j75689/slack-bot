@@ -72,7 +72,7 @@ func HandleSlackEvent(api *slack.Client, botID string, management *manager.Manag
 						appruntime.Logger.Error(fmt.Sprintf("[slack] process cmd [%s] error : %v", cmd, err))
 						return
 					}
-
+					appruntime.Logger.Debug(fmt.Sprintf("[slack] reply message:\n%v", replyStr))
 					var (
 						reply  []*BlockMsg
 						blocks []slack.Block
