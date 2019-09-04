@@ -1,8 +1,6 @@
 package manager
 
 import (
-	"fmt"
-
 	"github.com/j75689/slack-bot/appruntime"
 	"github.com/j75689/slack-bot/handler"
 	"github.com/j75689/slack-bot/kind"
@@ -93,7 +91,6 @@ func (obj *MessageManager) Execute(project, cmd string) (reply string, err error
 	}
 
 	tool.ResolveVariables(cmd, config.Task.Command, &config.Task.Variables)
-	fmt.Println(config.Task.Variables)
 
 	return obj.MessageHandler.Do(&config)
 

@@ -1,9 +1,12 @@
 package tool
 
 import (
+	"fmt"
 	"regexp"
 	"strings"
 	"sync"
+
+	"github.com/j75689/slack-bot/tool/valuechain"
 )
 
 // ResolveVariables assign cmd variable
@@ -63,4 +66,68 @@ func ResolveVariables(cmd string, pattern []string, variables *map[string]interf
 		}
 	}
 
+}
+
+// ReplaceVariables replace variables to content
+func ReplaceVariables(content []byte, variables map[string]interface{}) []byte {
+	r, _ := regexp.Compile("\\$\\{(.*?)\\}")
+	reply := string(content)
+
+	for _, match := range r.FindAllStringSubmatch(reply, -1) {
+		var (
+			name  string
+			tag   string
+			value string
+		)
+		nameReg, _ := regexp.Compile(`##.*:(.*?)##`)
+		tagReg, _ := regexp.Compile(`##(.*?):.*##`)
+
+		nameMatch := nameReg.FindStringSubmatch(match[1])
+		tagMatch := tagReg.FindStringSubmatch(match[1])
+
+		// find variable
+		if len(nameMatch) > 0 {
+			name = nameMatch[1]
+		} else {
+			name = match[1]
+		}
+
+		if v := GetParamterValue(name, variables); v != nil {
+			value = fmt.Sprintf("%v", v)
+		} else {
+			value = name
+		}
+
+		// process tag
+		if len(tagMatch) > 1 {
+			tag = tagMatch[1]
+			value = valuechain.Execute(tag, value)
+		}
+
+		// replace
+		reply = strings.Replace(reply, match[0], value, -1)
+	}
+
+	return []byte(reply)
+}
+
+// GetParamterValue by Layer
+func GetParamterValue(path string, data map[string]interface{}) interface{} {
+	layer := strings.Split(path, ".")
+	return getValue(layer, data)
+}
+
+func getValue(layer []string, data interface{}) interface{} {
+	if len(layer) <= 0 || data == nil {
+		return data
+	}
+
+	switch data.(type) {
+	case map[string]interface{}:
+		data = (data.(map[string]interface{}))[layer[0]]
+	default:
+		return data
+	}
+
+	return getValue(layer[1:len(layer)], data)
 }
