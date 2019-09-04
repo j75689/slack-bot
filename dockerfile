@@ -6,6 +6,7 @@ RUN apk --no-cache add ca-certificates
 
 WORKDIR /app
 COPY ./slackbot-go /app/slackbot-go
+COPY ./plugins /app/plugins
 RUN chmod 777 slackbot-go
 CMD ["./slackbot-go"]
 
