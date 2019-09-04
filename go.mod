@@ -12,8 +12,6 @@ require (
 	github.com/google/go-cmp v0.3.1 // indirect
 	github.com/gorilla/websocket v1.4.1 // indirect
 	github.com/kelseyhightower/envconfig v1.4.0
-	github.com/lusis/go-slackbot v0.0.0-20180109053408-401027ccfef5 // indirect
-	github.com/lusis/slack-test v0.0.0-20190426140909-c40012f20018 // indirect
 	github.com/nlopes/slack v0.5.1-0.20190823181507-4411ac942311
 	github.com/tidwall/pretty v1.0.0 // indirect
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
