@@ -6,6 +6,3 @@ slackbot
 .DS_Store
 slack-bot
 slackbot-go
-plugins/main.go
-plugins/*.so
-plugins-bin

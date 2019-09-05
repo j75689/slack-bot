@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"github.com/j75689/slack-bot/appruntime"
 	"github.com/j75689/slack-bot/model"
 	"github.com/j75689/slack-bot/plugin"
 	"github.com/j75689/slack-bot/tool"
@@ -24,6 +23,6 @@ func (obj *ActionProcesser) Run(stage *model.Stage, variables *map[string]interf
 
 func newActionProcesser() *ActionProcesser {
 	return &ActionProcesser{
-		Plugins: plugin.Load(appruntime.Env.PluginPath),
+		Plugins: plugin.Load(),
 	}
 }

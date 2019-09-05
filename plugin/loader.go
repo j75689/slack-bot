@@ -2,8 +2,8 @@ package plugin
 
 import (
 	"fmt"
-	"io/ioutil"
-	"plugin"
+	"reflect"
+	"runtime"
 	"strings"
 	"sync"
 
@@ -32,57 +32,21 @@ func (pool *Pool) Execute(plugin string, paramter []byte, variable *map[string]i
 }
 
 // Load ...
-func Load(path string) (pool *Pool) {
+func Load() (pool *Pool) {
 	pool = &Pool{
 		Map: &sync.Map{},
 	}
-	// fix Path
-	if !strings.HasSuffix(path, "/") {
-		path = path + "/"
-	}
-
-	// read files
-	files, err := ioutil.ReadDir(path)
-	if err != nil {
-		appruntime.Logger.Error(fmt.Sprintf("load plugin error: " + err.Error()))
-		return
-	}
-
-	// load
-	for _, f := range files {
-		if !f.IsDir() {
-			var runFuncName = f.Name()
-
-			if !strings.HasSuffix(f.Name(), ".so") {
-				continue
-			}
-
-			appruntime.Logger.Info(fmt.Sprintf("loading plugin [%s]", runFuncName))
-
-			if strings.LastIndexAny(runFuncName, ".") > -1 {
-				runFuncName = runFuncName[0:strings.LastIndexAny(runFuncName, ".")]
-			}
-
-			p, err := plugin.Open(path + f.Name())
-			if err != nil {
-				appruntime.Logger.Error(fmt.Sprintf("open plugin [%s] error: %v", path+f.Name(), err))
-				continue
-			}
-
-			function, err := p.Lookup(runFuncName)
-			if err != nil {
-				appruntime.Logger.Error(fmt.Sprintf("lookup func [%s] error: %v", runFuncName, err))
-				continue
-			}
-
-			if f, ok := function.(func(paramter []byte, variable *map[string]interface{}, output func(data interface{}), logger *zap.Logger)); ok {
-				pool.Store(runFuncName, Plugin(f))
-			} else {
-				appruntime.Logger.Error(fmt.Sprintf("reflect func [%s] failed", runFuncName))
-			}
-
-		}
-	}
-
+	prepare(
+		pool,
+		ElasticSearch6,
+	)
 	return
+}
+
+func prepare(pool *Pool, plugins ...Plugin) {
+	for _, plugin := range plugins {
+		pluginName := runtime.FuncForPC(reflect.ValueOf(plugin).Pointer()).Name()
+		pluginName = pluginName[strings.LastIndex(pluginName, ".")+1:]
+		pool.Store(pluginName, plugin)
+	}
 }

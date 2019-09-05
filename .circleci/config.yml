@@ -20,11 +20,6 @@ jobs:
           command: |
             go test ./...
       - run:
-          name: Build plugins
-          command: |
-            go build -buildmode=plugin -o ./plugins-bin/ElasticSearch6.so ./plugins/ElasticSearch6.go
-
-      - run:
           name: Build bin
           command: |
             go build -o slackbot-go
