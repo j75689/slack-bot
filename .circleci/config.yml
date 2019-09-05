@@ -22,7 +22,7 @@ jobs:
       - run:
           name: Build plugins
           command: |
-            go build -buildmode=plugin -o ./plugins/ElasticSearch6.so ./plugins/ElasticSearch6.go
+            go build -buildmode=plugin -o ./plugins-bin/ElasticSearch6.so ./plugins/ElasticSearch6.go
 
       - run:
           name: Build bin

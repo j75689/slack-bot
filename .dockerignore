@@ -5,4 +5,5 @@ go.sum
 slack-bot
 *.db
 .DS_Store
-plugins/main.go
+*.go
+*.md
