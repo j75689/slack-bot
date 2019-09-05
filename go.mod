@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	github.com/BurntSushi/toml v0.3.1 // indirect
+	github.com/aws/aws-sdk-go v1.23.15 // indirect
 	github.com/elastic/go-elasticsearch/v5 v5.6.2-0.20190731061920-3e19c2a74c9d
 	github.com/elastic/go-elasticsearch/v6 v6.8.3-0.20190731061920-efbed2e4c2f8
 	github.com/elastic/go-elasticsearch/v7 v7.3.1-0.20190801065659-92cf325b6bfb

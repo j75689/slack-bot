@@ -14,5 +14,8 @@ func Start() {
 
 // Shutdown Server
 func Shutdown() {
-	// ...
+	err := appruntime.DB.Close()
+	if err != nil {
+		appruntime.Logger.Error(err.Error())
+	}
 }
