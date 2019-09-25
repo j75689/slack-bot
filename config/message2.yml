@@ -13,25 +13,28 @@ task:
 
   stage:
     - type: render
-      template: |
-        [
-          {
-            "type": "context",
-            "elements": [
-              {
-                "type": "mrkdwn",
-                "text": "{{.Title}}"
-              }
-            ]
-          },
+      template: |-
+        {
+          "blocks":[
             {
-            "type": "context",
-            "elements": [
+              "type": "context",
+              "elements": [
+                {
+                  "type": "mrkdwn",
+                  "text": "{{.Title}}"
+                }
+              ]
+            },
               {
-                "type": "mrkdwn",
-                "text": "{{.data}}"
-              }
-            ]
-          }
-        ]
+              "type": "context",
+              "elements": [
+                {
+                  "type": "mrkdwn",
+                  "text": "{{.data}}"
+                }
+              ]
+            }
+          ]
+        }
+        
 

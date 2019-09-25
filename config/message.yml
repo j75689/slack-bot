@@ -17,7 +17,7 @@ task:
         # user: 
         # pass:
         index: dev
-        query: |+
+        query: |-
           {
             "query": {
               "match": {
@@ -29,24 +29,27 @@ task:
       output: result
     - type: render
       template: |
-        [
-          {
-            "type": "context",
-            "elements": [
-              {
-                "type": "mrkdwn",
-                "text": "{{.Title}}"
-              }
-            ]
-          },
+        {
+          "blocks":[
             {
-            "type": "context",
-            "elements": [
+              "type": "context",
+              "elements": [
+                {
+                  "type": "mrkdwn",
+                  "text": "{{.Title}}"
+                }
+              ]
+            },
               {
-                "type": "mrkdwn",
-                "text": "{{.result.hits.total}}"
-              }
-            ]
-          }
-        ]
+              "type": "context",
+              "elements": [
+                {
+                  "type": "mrkdwn",
+                  "text": "{{.result.hits.total}}"
+                }
+              ]
+            }
+          ]
+        }
+        
 

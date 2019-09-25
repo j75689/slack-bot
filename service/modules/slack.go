@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
+	"reflect"
 	"strings"
 
 	"github.com/j75689/slack-bot/kind"
@@ -17,18 +19,43 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// BlockMsg custom reply msg
-type BlockMsg map[string]interface{}
+const slackPostMessageAPI = "https://slack.com/api/chat.postMessage"
 
-// BlockType get block type
-func (obj *BlockMsg) BlockType() slack.MessageBlockType {
-	t := (*obj)["type"]
-	if t != nil {
-		if tt, ok := t.(string); ok {
-			return slack.MessageBlockType(tt)
-		}
+// PostSlackMessage slack post api
+// https://api.slack.com/methods/chat.postMessage
+func PostSlackMessage(channel string, message slack.Msg) (result map[string]interface{}, err error) {
+
+	message.Channel = channel
+	postbody, err := json.Marshal(message)
+	if err != nil {
+		return nil, err
 	}
-	return ""
+
+	req, err := http.NewRequest(http.MethodPost, slackPostMessageAPI, bytes.NewBuffer(postbody))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+appruntime.Env.SlackBotOauthToken)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	response, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	json.Unmarshal(response, &result)
+
+	if !reflect.DeepEqual(result["ok"], true) {
+		return result, fmt.Errorf("%v", result["error"])
+	}
+	return result, nil
 }
 
 // HandleSlackEvent check service challenge
@@ -74,14 +101,10 @@ func HandleSlackEvent(api *slack.Client, botID string, management *manager.Manag
 					}
 					appruntime.Logger.Debug(fmt.Sprintf("[slack] reply message:\n%v", replyStr))
 					var (
-						reply  []*BlockMsg
-						blocks []slack.Block
+						reply slack.Msg
 					)
 					json.Unmarshal([]byte(replyStr), &reply)
-					for _, block := range reply {
-						blocks = append(blocks, block)
-					}
-					if _, _, err := api.PostMessage(ev.Channel, slack.MsgOptionBlocks(blocks...)); err != nil {
+					if _, err := PostSlackMessage(ev.Channel, reply); err != nil {
 						appruntime.Logger.Error(err.Error())
 					}
 
